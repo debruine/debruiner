@@ -1,0 +1,25 @@
+Package: debruine
+Title: Personal Functions for Lisa DeBruine
+Version: 0.0.0.9000
+Authors@R: person("Lisa", "DeBruine", email = "debruine@gmail.com", role = c("aut", "cre"))
+Description: Provides functions for Lisa DeBruine's personal use.
+Depends:
+    R (>= 3.2.4)
+Imports:
+    MASS,
+    lme4,
+    dplyr,
+    tidyr,
+    purrr,
+    magrittr,
+    tibble,
+    stats
+License: MIT + file LICENSE
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
+Encoding: UTF-8
+LazyData: true
