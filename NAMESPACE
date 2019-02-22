@@ -2,4 +2,6 @@
 
 export("%>%")
 export(format_p)
+export(r2z)
+export(steiger)
 importFrom(magrittr,"%>%")
