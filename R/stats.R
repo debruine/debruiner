@@ -16,7 +16,7 @@ r2z <- function(r) {
 
 #' Steiger's Z
 #'
-#' \code{steiger} Converts an r-value to a z-value using Fisher's r-to-z transformation.
+#' \code{steiger} Test for significant difference between two correlations on the same sample.
 #'
 #' @param r12 the correlation between variables 1 and 2
 #' @param r13 the correlation between variables 1 and 3
@@ -48,3 +48,73 @@ steiger <- function(r12, r13, r23, n, tails = 2) {
   
   list("z" = z, "p" = p)
 }
+
+
+#' Steiger's Z for Data Frames or vectors
+#'
+#' \code{steiger} Test for significant difference between two correlations on the same sample.
+#'
+#' @param v1 the first vector or a dataframe where the first three columns are the vectors
+#' @param v2 the second vector (ignored if v1 is a data frame)
+#' @param v3 the third vector (ignored if v1 is a data frame)
+#' @param alpha the number of observations
+#' @param tails whether to report a one-tailed or two-tailed p-value
+#' 
+#' @return list
+#' @examples
+#' steiger_dat(iris)
+#' @export
+steiger_dat <- function(v1, v2 = NULL, v3 = NULL, alpha = 0.05, tails = 2) {
+  varnames <- c("V1", "V2", "V3")
+  if (is.data.frame(v1)) {
+    dat <- v1
+    v1 <- dat[, 1]
+    v2 <- dat[, 2]
+    v3 <- dat[, 3]
+    varnames = names(dat)[1:3]
+  }
+  stopifnot(length(v1) == length(v2))
+  stopifnot(length(v1) == length(v3))
+  
+  r12 <- stats::cor(v1, v2)
+  r13 <- stats::cor(v1, v3)
+  r23 <- stats::cor(v2, v3)
+  n <- length(v1)
+  
+  stg1 <- steiger(r12, r13, r23, n, tails)
+  stg2 <- steiger(r12, r23, r13, n, tails)
+  stg3 <- steiger(r13, r23, r12, n, tails)
+  
+  sig1 <- ifelse(stg1$p < alpha, "", "not ")
+  sig2 <- ifelse(stg2$p < alpha, "", "not ")
+  sig3 <- ifelse(stg3$p < alpha, "", "not ")
+  
+  stg1$text <- paste0(varnames[1], " is correlated to ", varnames[2], 
+                      " (r = ", round(r12, 3), ") ",
+                      "and to ", varnames[3], " (r = ", round(r13, 3) , 
+                      "). This difference is ", sig1, 
+                      "significant (z = ", round(stg1$z, 3), ", ", format_p(stg1$p), 
+                      ") ", tails, "-tailed with an alpha of ", alpha, ".")
+  
+  stg2$text <- paste0(varnames[2], " is correlated to ", varnames[1], 
+                      " (r = ", round(r12, 3), ") ",
+                      "and to ", varnames[3], " (r = ", round(r23, 3) , 
+                      "). This difference is ", sig2, 
+                      "significant (z = ", round(stg2$z, 3), ", ", format_p(stg2$p), 
+                      ") ", tails, "-tailed with an alpha of ", alpha, ".")
+  
+  stg3$text <- paste0(varnames[3], " is correlated to ", varnames[1], 
+                      " (r = ", round(r13, 3), ") ",
+                      "and to ", varnames[2], " (r = ", round(r23, 3) , 
+                      "). This difference is ", sig3, 
+                      "significant (z = ", round(stg3$z, 3), ", ", format_p(stg3$p), 
+                      ") ", tails, "-tailed with an alpha of ", alpha, ".")
+  
+  stg <- list(stg1, stg2, stg3)
+  names(stg) <- varnames
+  
+  print(c(stg1$text, stg2$text, stg3$text))
+  invisible(stg)
+}
+
+

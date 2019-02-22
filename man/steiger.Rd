@@ -21,7 +21,7 @@ steiger(r12, r13, r23, n, tails = 2)
 list
 }
 \description{
-\code{steiger} Converts an r-value to a z-value using Fisher's r-to-z transformation.
+\code{steiger} Test for significant difference between two correlations on the same sample.
 }
 \examples{
 steiger(.4, .3, .2, 20) # z=0.3583792, p=0.7200596
